@@ -5,13 +5,37 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Article;
 
 class ArticlesController extends AbstractController
 {
+
+/**
+ * @Route("/article/add", name="article_add")
+ */
+public function addArticle(EntityManagerInterface $entityManger):Response
+{
+    $article = new Article();
+    $article->getId();
+    $article->setDesignation("the breakfast");
+    $article->setDescription("the breakfast burrito on my plate");
+    $article->setPrix(5000);
+    $entityManger->persist($article);
+
+    $entityManger->flush();
+    return $this->render('articles/index.html.twig', [
+        'article'=>$article ,
+        
+    ]);
+
+}
+
+
     /**
      * @Route("/articles", name="articles")
      */
-    public function index(): Response
+    public function showArticles(ArticleRepository $ArticleRepository): Response
     {
         $articles=["Article1","Article2","Article3"];
         return $this->render('articles/index.html.twig', [
