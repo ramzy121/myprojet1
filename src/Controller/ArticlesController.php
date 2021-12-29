@@ -32,12 +32,34 @@ public function addArticle(EntityManagerInterface $entityManger):Response
 }
 
 
-    /**
-     * @Route("/articles", name="articles")
+   /**
+     * @Route("/article/{id}", name="article_routes")
      */
-    public function showArticles(ArticleRepository $ArticleRepository): Response
+    public function showArticle(int $id,ArticleRepository $ArticleRepository):Response
     {
-        $articles=["Article1","Article2","Article3"];
+        $article=$ArticleRepository->find($id);
+        if(!$id)
+        {
+            throw $this->createNotFoundException("id incorrect");
+
+        }
+        return $this->render('articles/show.html.twig',[
+            'article'=>$article,]);
+
+    }
+
+
+    /**
+     * @Route("/articles", name="articles_routes")
+     */
+    public function showArticles(ArticleRepository $ArticleRepository ): Response
+    {
+
+        $articles=$ArticleRepository->findAll();
+        if(!$articles){
+        
+            throw $this->createNotFoundException("aucun articles trouvés");
+        }
         return $this->render('articles/index.html.twig', [
             'articles' => $articles,
         ]);
@@ -56,6 +78,46 @@ public function addArticle(EntityManagerInterface $entityManger):Response
         ]);
     }
 
+
+
+
+
+    
+
+       /**
+     * @Route("/article/{id}", name="article_routes")
+     */
+    public function showArticle(ArticleRepository $ArticleRepository ):Response
+    {
+        $article=$ArticleRepository->find($id);
+        if(!$id)
+        {
+            throw $this->createNotFoundException("incorrect");
+
+        }
+        return $this->render('articles/show.html.twig',[
+            'article'=>$article,]);
+
+    }
+
+
+     /**
+     * @Route("/art/edit/{id}",priority=3, name="article_udate")
+     */
+
+    public function editArticle(Article $article,EntityManagerInterface $entityManager):Response
+    {
+     if(!$article)
+      {
+        return $this->createNotFoundException("Aucun Article Correspand a cette ID");
+      }
+     $article->SetPrix(22);
+     #permer d'executer la requete et d'envoyer a la BD tout ce qui a été persisté dans entity manager
+     $entityManager->flush();
+     return $this->redirectToRoute('articles_routes');
+
+
+}
 
 
 }
